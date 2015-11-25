@@ -38,13 +38,13 @@ connection.commit()
 # 震源の座標を取得
 epicenterStr = xml.report.body.earthquake.hypocenter.area.find('jmx_eb:coordinate').string
 # 分割
-epicenterCoord = re.split(r'\-|\+|\/', epicenterStr)
+epicenterCoord = re.split(r'(\-|\+|\/)', epicenterStr)
 # epicenterに入れる
 epicenter = {"type":"Feature",
              "properties": {"class":"epicenter"},
              "geometry":{
                 "type":"Point",
-                "coordinates":[float(epicenterCoord[2]), float(epicenterCoord[1])]
+                "coordinates":[float(epicenterCoord[3] + epicenterCoord[4]), float(epicenterCoord[1] + epicenterCoord[2])]
                 }
             }
 
@@ -56,75 +56,77 @@ cityLevelFeatures = [epicenter]
 areaLevelPoints = [[] for i in range(0,9)]
 cityLevelPoints = [[] for i in range(0,9)]
 
-# 各震度ごとにpointsにまとめる
-pref = xml.report.body.intensity.observation.findAll('pref')
-for p in pref:
-    area = p.findAll('area')
-    for a in area:
-        cursor.execute("SELECT lat,lon FROM jma_area_centroid WHERE jma_code=" + a.code.string)
-        row = cursor.fetchone()
-        maxint = a.maxint.string
-        if maxint == "1":
-            areaLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "2":
-            areaLevelPoints[1].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "3":
-            areaLevelPoints[2].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "4":
-            areaLevelPoints[3].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "5-":
-            areaLevelPoints[4].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "5+":
-            areaLevelPoints[5].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "6-":
-            areaLevelPoints[6].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "6+":
-            areaLevelPoints[7].append({"type":"Point","coordinates": [row[1],row[0]]})
-        elif maxint == "7":
-            areaLevelPoints[8].append({"type":"Point","coordinates": [row[1],row[0]]})
-        city = a.findAll('city')
-        for c in city:
-            cursor.execute("SELECT lat,lon FROM jma_city_centroid WHERE jma_code=" + c.code.string)
-            row = cursor.fetchone()
-            maxint = c.maxint.string
-            if maxint == "1":
-                cityLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "2":
-                cityLevelPoints[1].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "3":
-                cityLevelPoints[2].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "4":
-                cityLevelPoints[3].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "5-":
-                cityLevelPoints[4].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "5+":
-                cityLevelPoints[5].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "6-":
-                cityLevelPoints[6].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "6+":
-                cityLevelPoints[7].append({"type":"Point","coordinates": [row[1],row[0]]})
-            elif maxint == "7":
-                cityLevelPoints[8].append({"type":"Point","coordinates": [row[1],row[0]]})
+if xml.report.body.find('intensity'):
 
-# featuresに各震度ごとのpointsを追加
-for n in range(0, 9):
-    if len(areaLevelPoints[n]) != 0:
-        areaLevelFeatures.append({"type":"Feature",
-                                  "properties":{"class":n+1},
-                                  "geometry":{
-                                     "type":"GeometryCollection",
-                                     "geometries":areaLevelPoints[n]
-                                     }
-                                 })
-for n in range(0, 9):
-    if len(cityLevelPoints[n]) != 0:
-        cityLevelFeatures.append({"type":"Feature",
-                                  "properties":{"class":n+1},
-                                  "geometry":{
-                                     "type":"GeometryCollection",
-                                     "geometries":cityLevelPoints[n]
-                                     }
-                                 })
+    # 各震度ごとにpointsにまとめる
+    pref = xml.report.body.intensity.observation.findAll('pref')
+    for p in pref:
+        area = p.findAll('area')
+        for a in area:
+            cursor.execute("SELECT lat,lon FROM jma_area_centroid WHERE jma_code=" + a.code.string)
+            row = cursor.fetchone()
+            maxint = a.maxint.string
+            if maxint == "1":
+                areaLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "2":
+                areaLevelPoints[1].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "3":
+                areaLevelPoints[2].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "4":
+                areaLevelPoints[3].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "5-":
+                areaLevelPoints[4].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "5+":
+                areaLevelPoints[5].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "6-":
+                areaLevelPoints[6].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "6+":
+                areaLevelPoints[7].append({"type":"Point","coordinates": [row[1],row[0]]})
+            elif maxint == "7":
+                areaLevelPoints[8].append({"type":"Point","coordinates": [row[1],row[0]]})
+            city = a.findAll('city')
+            for c in city:
+                cursor.execute("SELECT lat,lon FROM jma_city_centroid WHERE jma_code=" + c.code.string)
+                row = cursor.fetchone()
+                maxint = c.maxint.string
+                if maxint == "1":
+                    cityLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "2":
+                    cityLevelPoints[1].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "3":
+                    cityLevelPoints[2].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "4":
+                    cityLevelPoints[3].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "5-":
+                    cityLevelPoints[4].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "5+":
+                    cityLevelPoints[5].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "6-":
+                    cityLevelPoints[6].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "6+":
+                    cityLevelPoints[7].append({"type":"Point","coordinates": [row[1],row[0]]})
+                elif maxint == "7":
+                    cityLevelPoints[8].append({"type":"Point","coordinates": [row[1],row[0]]})
+
+    # featuresに各震度ごとのpointsを追加
+    for n in range(0, 9):
+        if len(areaLevelPoints[n]) != 0:
+            areaLevelFeatures.append({"type":"Feature",
+                                      "properties":{"class":n+1},
+                                      "geometry":{
+                                         "type":"GeometryCollection",
+                                         "geometries":areaLevelPoints[n]
+                                         }
+                                     })
+    for n in range(0, 9):
+        if len(cityLevelPoints[n]) != 0:
+            cityLevelFeatures.append({"type":"Feature",
+                                      "properties":{"class":n+1},
+                                      "geometry":{
+                                         "type":"GeometryCollection",
+                                         "geometries":cityLevelPoints[n]
+                                         }
+                                     })
 
 # featuresをfeatureCollectionに追加
 areaLevelFeatureCollection = {"type":"FeatureCollection","features":areaLevelFeatures}
