@@ -65,7 +65,10 @@ if xml.report.body.find('intensity'):
         for a in area:
             cursor.execute("SELECT lat,lon FROM jma_area_centroid WHERE jma_code=" + a.code.string)
             row = cursor.fetchone()
-            maxint = a.maxint.string
+            if a.maxint is not None:
+                maxint = a.maxint.string
+            else:
+                maxint = ""
             if maxint == "1":
                 areaLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
             elif maxint == "2":
@@ -88,7 +91,10 @@ if xml.report.body.find('intensity'):
             for c in city:
                 cursor.execute("SELECT lat,lon FROM jma_city_centroid WHERE jma_code=" + c.code.string)
                 row = cursor.fetchone()
-                maxint = c.maxint.string
+                if c.maxint is not None:
+                    maxint = c.maxint.string
+                else:
+                    maxint = ""
                 if maxint == "1":
                     cityLevelPoints[0].append({"type":"Point","coordinates": [row[1],row[0]]})
                 elif maxint == "2":
