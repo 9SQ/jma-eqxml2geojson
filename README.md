@@ -22,6 +22,7 @@ largeScalePoints.json : 震源地と市町村等(1898区域)の重心座標、�
 ※要 BeautifulSoup (BeautifulStoneSoup)
 
 [jma-eqarea-centroid](https://github.com/9SQ/jma-eqarea-centroid) から jma_area_centroid.csv と jma_city_centroid.csv を取得し、 eqxml2geojson.py と同じディレクトリに入れて実行
+※jma-eqarea-centroidは市制移行や市区町村の統廃合などがあった際に追従して更新予定です。Watchしておくことをお勧めします。
 
 ```
 python eqxml2geojson.py [uuid].xml
