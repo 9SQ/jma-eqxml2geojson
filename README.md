@@ -14,8 +14,8 @@ largeScalePoints.json : 震源地と市町村等(1898区域)の重心座標、�
 ### ファイル
 
 * eqxml2geojson.py : プログラム(python2)
-* 13ed6ca9-efbb-37c5-b2cb-f2b3158f55d4.xml : サンプルXML電文  
-(2015年5月30日 20:24分頃に小笠原諸島西方沖で発生した、最大震度5強の地震の時のXML電文)
+* f0e017f4-d9df-3741-8e7a-fc7837cbeffc.xml : サンプルXML電文  
+(2016年4月14日 21:26分頃に熊本県熊本地方で発生した、最大震度7を観測した地震のXML電文)
 
 ## 実行方法
 
@@ -26,15 +26,16 @@ largeScalePoints.json : 震源地と市町村等(1898区域)の重心座標、�
 ※jma-eqarea-centroidは市制移行や市区町村の統廃合などがあった際に追従して更新予定です。Watchしておくことをお勧めします。
 
 ```
-python eqxml2geojson.py [uuid].xml
+python eqxml2geojson.py [centroid csvs dir] [input file(uuid.xml)] [output dir] 
 ```
 
 例：同梱のサンプル電文からGeoJSONを得る
 ```
-python eqxml2geojson.py 13ed6ca9-efbb-37c5-b2cb-f2b3158f55d4.xml
+git clone https://github.com/9SQ/jma-eqarea-centroid.git
+python eqxml2geojson.py ./jma-eqarea-centroid/ f0e017f4-d9df-3741-8e7a-fc7837cbeffc.xml ./
 ```
 
-eqxml2geojson.py が存在するディレクトリに smallScalePoints.json と largeScalePoints.json が出力されます。
+指定したディレクトリに smallScalePoints.json と largeScalePoints.json が出力されます。
 
 ## 出力されるGeoJSONのフォーマット
 ```
@@ -77,7 +78,8 @@ eqxml2geojson.py が存在するディレクトリに smallScalePoints.json と 
          },
          "type":"Feature",
          "properties":{
-            "class":<震度(1〜9:震度1〜7)>
+            "class":<震度(1,2,3,4,5-,5+,6-,6+,7)>,
+            "name":<地域名>
          }
       },
       ...(中略)...
@@ -96,7 +98,8 @@ eqxml2geojson.py が存在するディレクトリに smallScalePoints.json と 
          },
          "type":"Feature",
          "properties":{
-            "class":<震度(1〜9:震度1〜7)>
+            "class":<震度(1,2,3,4,5-,5+,6-,6+,7)>,
+            "name":<地域名>
          }
       }
    ]
