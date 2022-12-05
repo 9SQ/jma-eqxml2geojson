@@ -14,25 +14,28 @@ largeScalePoints.json : 震源地と市町村等(1898区域)の重心座標、�
 ### ファイル
 
 * eqxml2geojson.py : プログラム(python2)
-* f0e017f4-d9df-3741-8e7a-fc7837cbeffc.xml : サンプルXML電文  
-(2016年4月14日 21:26分頃に熊本県熊本地方で発生した、最大震度7を観測した地震のXML電文)
+* 20220316151110_0_VXSE53_010000.xml : サンプルXML電文  
+(2022年03月16日 23時36分頃に福島県沖で発生した、最大震度6強を観測した地震のXML電文)
 
 ## 実行方法
 
-※要 BeautifulSoup (BeautifulStoneSoup)
+Python3の実行環境を用意してください。
+
+以下の `python3` および `pip3` は環境によって `python` および　`pip` に読み替えて実行してください。
 
 [jma-eqarea-centroid](https://github.com/9SQ/jma-eqarea-centroid) から jma_area_centroid.csv と jma_city_centroid.csv を取得し、 eqxml2geojson.py と同じディレクトリに入れて実行
 
 ※jma-eqarea-centroidは市制移行や市区町村の統廃合などがあった際に追従して更新予定です。Watchしておくことをお勧めします。
 
 ```
-python eqxml2geojson.py [centroid csvs dir] [input file(uuid.xml)] [output dir] 
+python3 eqxml2geojson.py [centroid csvs dir] [input file(uuid.xml)] [output dir] 
 ```
 
 例：同梱のサンプル電文からGeoJSONを得る
 ```
+pip3 install -r requirements.txt
 git clone https://github.com/9SQ/jma-eqarea-centroid.git
-python eqxml2geojson.py ./jma-eqarea-centroid/ f0e017f4-d9df-3741-8e7a-fc7837cbeffc.xml ./
+python3 eqxml2geojson.py ./jma-eqarea-centroid/ 20220316151110_0_VXSE53_010000.xml ./
 ```
 
 指定したディレクトリに smallScalePoints.json と largeScalePoints.json が出力されます。
